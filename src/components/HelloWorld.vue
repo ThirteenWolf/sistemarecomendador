@@ -1,5 +1,134 @@
 <template>
   <v-container>
+    <v-toolbar app>
+      <v-toolbar-title class="headline text-uppercase">
+        <span>Recomendador de mascotas</span>
+      </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn
+        color="primary"
+        dark
+        @click="dialog = true"
+      >
+        <span class="mr-2">Obtener Recomendación</span>
+      </v-btn>
+    </v-toolbar>
+
+    <v-dialog v-model="dialog" max-width="600px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">Obten tu recomendación</span>
+        </v-card-title>
+        <v-card-text>
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-text-field
+              v-model="nombre"
+              :rules="reglasNombre"
+              label="Nombre"
+              required
+              row
+            ></v-text-field>
+            <v-radio-group 
+              v-model="vivienda" 
+              :rules="reglasVivienda" 
+              required
+              row
+            >
+              <div slot="label">¿Qué tipo de vivienda habitas?</div>
+              <v-radio value=1>
+                <div slot="label">Casa</div>
+              </v-radio>
+              <v-radio value=0>
+                <div slot="label">Departamento</div>
+              </v-radio>
+            </v-radio-group>
+            <v-radio-group 
+              v-model="patio"
+              :rules="reglasPatio" 
+              required
+              row
+            >
+              <div slot="label">¿El lugar donde vives cuenta con patio?</div>
+              <v-radio value=2>
+                <div slot="label">Si</div>
+              </v-radio>
+              <v-radio value=0>
+                <div slot="label">No</div>
+              </v-radio>
+            </v-radio-group>
+            <v-radio-group 
+              v-model="ocupacion"
+              :rules="reglasOcupacion" 
+              required
+              row
+            >
+              <div slot="label">¿A qué se dedica?</div>
+              <v-radio value=3>
+                <div slot="label">Trabajador</div>
+              </v-radio>
+              <v-radio value=0>
+                <div slot="label">Estudiante</div>
+              </v-radio>
+            </v-radio-group>
+            <v-radio-group 
+              v-model="genero"
+              :rules="reglasGenero" 
+              required
+              row
+            >
+              <div slot="label">Género</div>
+              <v-radio value=4>
+                <div slot="label">Hombre</div>
+              </v-radio>
+              <v-radio value=0>
+                <div slot="label">Mujer</div>
+              </v-radio>
+            </v-radio-group>
+            <v-radio-group 
+              v-model="activFisica"
+              :rules="reglasActivFisica" 
+              required
+              row
+            >
+              <div slot="label">¿Practica alguna actividad física?</div>
+              <v-radio value=5>
+                <div slot="label">Si</div>
+              </v-radio>
+              <v-radio value=0>
+                <div slot="label">No</div>
+              </v-radio>
+            </v-radio-group>
+            <v-radio-group 
+              v-model="compra"
+              :rules="reglasCompra" 
+              required
+              row
+            >
+              <div slot="label">¿Piensa que la compra de animales es una mala práctica?</div>
+              <v-radio value=6>
+                <div slot="label">Si</div>
+              </v-radio>
+              <v-radio value=0>
+                <div slot="label">No</div>
+              </v-radio>
+            </v-radio-group>
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="blue darken-1"
+            flat
+            :disabled="!valid"
+            @click="submit"
+          >
+            Obtener Recomendación
+          </v-btn>
+          <v-btn @click="clear">Limpiar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-layout
       text-xs-center
       align-center
@@ -139,9 +268,25 @@
         </v-data-table>
       </v-flex>
 
-      <v-flex>
-        
-      </v-flex>
+      <v-dialog
+        v-model="dialog2"
+        max-width="290"
+      >
+        <v-card>
+          <v-card-title class="headline">Tu recomendación</v-card-title>
+          <v-card-text>{{recomen}}</v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="primary"
+              dark
+              @click="dialog2 = false"
+            >
+              Ok
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-layout>
   </v-container>
 </template>
@@ -152,6 +297,35 @@
       this.Recomendacion()
     },
     data: () => ({
+      valid: true,
+      nombre: '',
+      reglasNombre: [
+        v => !!v || 'Tu nombre es requerido'
+      ],
+      vivienda: '',
+      reglasVivienda: [
+        v => !!v || 'Campo requerido'
+      ],
+      patio: '',
+      reglasPatio: [
+        v => !!v || 'Campo requerido'
+      ],
+      ocupacion: '',
+      reglasOcupacion: [
+        v => !!v || 'Campo requerido'
+      ],
+      genero: '',
+      reglasGenero: [
+        v => !!v || 'Campo requerido'
+      ],
+      activFisica: '',
+      reglasActivFisica: [
+        v => !!v || 'Campo requerido'
+      ],
+      compra: '',
+      reglasCompra: [
+        v => !!v || 'Campo requerido'
+      ],
       headers1: [
         {sortable: false, text: 'Nombre', value: 'nombre'},
         {sortable: false, text: "Tipo de Vivienda", value: 'vivienda'},
@@ -245,57 +419,9 @@
         ["Dianna Vanesa",1,2,0,4,5,6],
         ["Cosmito", 1, 0, 3, 0, 5, 0]],
       recomendaciones: [],
-      ecosystem: [
-        {
-          text: 'vuetify-loader',
-          href: 'https://github.com/vuetifyjs/vuetify-loader'
-        },
-        {
-          text: 'github',
-          href: 'https://github.com/vuetifyjs/vuetify'
-        },
-        {
-          text: 'awesome-vuetify',
-          href: 'https://github.com/vuetifyjs/awesome-vuetify'
-        }
-      ],
-      importantLinks: [
-        {
-          text: 'Documentation',
-          href: 'https://vuetifyjs.com'
-        },
-        {
-          text: 'Chat',
-          href: 'https://community.vuetifyjs.com'
-        },
-        {
-          text: 'Made with Vuetify',
-          href: 'https://madewithvuetifyjs.com'
-        },
-        {
-          text: 'Twitter',
-          href: 'https://twitter.com/vuetifyjs'
-        },
-        {
-          text: 'Articles',
-          href: 'https://medium.com/vuetify'
-        }
-      ],
-      whatsNext: [
-        {
-          text: 'Explore components',
-          href: 'https://vuetifyjs.com/components/api-explorer'
-        },
-        {
-          text: 'Select a layout',
-          href: 'https://vuetifyjs.com/layout/pre-defined'
-        },
-        {
-          text: 'Frequently Asked Questions',
-          href: 'https://vuetifyjs.com/getting-started/frequently-asked-questions'
-        }
-
-      ]
+      dialog: false,
+      dialog2: false,
+      recomen: ''
     }),
     methods: {
       MeanX: function (z) {
@@ -398,6 +524,34 @@
           }
           w++;
         }
+      },
+      submit(){
+        if(this.$refs.form.validate()) {
+          let recomendacion = []
+          recomendacion[0] = this.nombre
+          recomendacion[1] = parseInt(this.vivienda)
+          recomendacion[2] = parseInt(this.patio)
+          recomendacion[3] = parseInt(this.ocupacion)
+          recomendacion[4] = parseInt(this.genero)
+          recomendacion[5] = parseInt(this.activFisica)
+          recomendacion[6] = parseInt(this.compra)
+          this.y.push(recomendacion)
+
+          this.Recomendacion()
+
+          let ultima = this.recomendaciones[this.recomendaciones.length - 1]
+
+          this.recomen = `${ultima[0]} te recomendamos: ${ultima[7]}`
+
+          this.dialog = false
+
+          this.dialog2 = true
+
+          this.clear()
+        }
+      },
+      clear() {
+        this.$refs.form.reset()
       }
     }
   }
